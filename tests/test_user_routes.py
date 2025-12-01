@@ -163,7 +163,8 @@ class TestUserLogin:
         login_data = {"username": "", "password": ""}
         response = client.post("/api/users/login", data=login_data)
 
-        assert response.status_code == 401
+        # Empty credentials trigger validation errors (422) before auth logic
+        assert response.status_code == 422
 
 
 class TestGetCurrentUser:
