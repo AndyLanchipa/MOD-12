@@ -119,9 +119,16 @@ def update_calculation(
     Raises:
         HTTPException: If calculation not found or not owned by user
     """
-    updated_calculation = calculation_service.update_calculation(
-        db, calculation_id, current_user.id, calculation_update
-    )
+    try:
+        updated_calculation = calculation_service.update_calculation(
+            db, calculation_id, current_user.id, calculation_update
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e),
+        )
+    
     if not updated_calculation:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

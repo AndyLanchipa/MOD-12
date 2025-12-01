@@ -113,8 +113,10 @@ def update_calculation(
         else:
             setattr(db_calculation, field, value)
 
-    # Recalculate result if any values changed
+    # Validate division by zero after applying updates
     if update_data:
+        if db_calculation.type == "DIVIDE" and db_calculation.b == 0:
+            raise ValueError("Division by zero is not allowed")
         db_calculation.save_result()
 
     db.commit()
