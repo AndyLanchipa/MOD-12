@@ -392,24 +392,25 @@ The project includes a comprehensive GitHub Actions workflow:
 
 ## Docker Hub Repository
 
-The application is automatically deployed to Docker Hub.
+**Docker Hub**: https://hub.docker.com/r/andylanchipa/calculation-app
 
-Set up your Docker Hub credentials in GitHub repository secrets:
-- `DOCKER_USERNAME`: Your Docker Hub username
-- `DOCKER_TOKEN`: Your Docker Hub access token
-
-Once configured, images will be available at:
-- **Latest**: `<your-username>/mod-12-calculation-api:latest`
-- **Tagged**: `<your-username>/mod-12-calculation-api:<commit-sha>`
+The application is automatically deployed to Docker Hub on every push to the main branch.
 
 ### Pull and Run
 ```bash
-docker pull <your-username>/mod-12-calculation-api:latest
+# Pull the latest image
+docker pull andylanchipa/calculation-app:latest
+
+# Run the container
 docker run -p 8000:8000 \
   -e DATABASE_URL="postgresql://user:pass@host/db" \
   -e SECRET_KEY="your-secret-key" \
-  <your-username>/mod-12-calculation-api:latest
+  andylanchipa/calculation-app:latest
 ```
+
+### Available Tags
+- `latest`: Most recent build from main branch
+- `<commit-sha>`: Specific commit version for reproducibility
 
 ## Development Guidelines
 

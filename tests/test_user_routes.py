@@ -220,7 +220,7 @@ class TestUserEndToEnd:
         # 2. Login with the new user
         login_data = {
             "username": user_data["username"],
-            "password": user_data["password"]
+            "password": user_data["password"],
         }
         login_response = client.post("/api/users/login", data=login_data)
         assert login_response.status_code == 200

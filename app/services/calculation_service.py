@@ -77,10 +77,7 @@ def get_calculation_by_id(
     """
     return (
         db.query(Calculation)
-        .filter(
-            Calculation.id == calculation_id,
-            Calculation.user_id == user_id
-        )
+        .filter(Calculation.id == calculation_id, Calculation.user_id == user_id)
         .first()
     )
 
@@ -89,7 +86,7 @@ def update_calculation(
     db: Session,
     calculation_id: int,
     user_id: int,
-    calculation_update: CalculationUpdate
+    calculation_update: CalculationUpdate,
 ) -> Optional[Calculation]:
     """
     Update a calculation.
@@ -125,9 +122,7 @@ def update_calculation(
     return db_calculation
 
 
-def delete_calculation(
-    db: Session, calculation_id: int, user_id: int
-) -> bool:
+def delete_calculation(db: Session, calculation_id: int, user_id: int) -> bool:
     """
     Delete a calculation.
 

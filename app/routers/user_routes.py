@@ -84,7 +84,7 @@ def login_user(
 
 @router.get("/me", response_model=UserRead)
 def get_current_user_info(
-    current_user: Annotated[User, Depends(get_current_active_user)]
+    current_user: Annotated[User, Depends(get_current_active_user)],
 ):
     """
     Get current authenticated user information.

@@ -363,7 +363,7 @@ class TestCalculationEdit:
         response = client.patch(
             f"/api/calculations/{calc_id}",
             json=update_data,
-            headers=second_user_headers
+            headers=second_user_headers,
         )
 
         assert response.status_code == 404
