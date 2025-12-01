@@ -8,10 +8,10 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 class CalculationType(str, Enum):
     """Enumeration for supported calculation types"""
 
-    ADD = "Add"
-    SUB = "Sub"
-    MULTIPLY = "Multiply"
-    DIVIDE = "Divide"
+    ADD = "ADD"
+    SUB = "SUB"
+    MULTIPLY = "MULTIPLY"
+    DIVIDE = "DIVIDE"
 
 
 class CalculationCreate(BaseModel):

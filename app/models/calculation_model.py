@@ -11,7 +11,7 @@ class Calculation(Base):
     id = Column(Integer, primary_key=True, index=True)
     a = Column(Float, nullable=False)
     b = Column(Float, nullable=False)
-    type = Column(String(20), nullable=False)  # Add, Sub, Multiply, Divide
+    type = Column(String(20), nullable=False)  # ADD, SUB, MULTIPLY, DIVIDE
     result = Column(Float, nullable=True)  # Store result or compute on demand
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -28,13 +28,13 @@ class Calculation(Base):
 
     def calculate_result(self):
         """Calculate and return the result based on operation type"""
-        if self.type == "Add":
+        if self.type == "ADD":
             return self.a + self.b
-        elif self.type == "Sub":
+        elif self.type == "SUB":
             return self.a - self.b
-        elif self.type == "Multiply":
+        elif self.type == "MULTIPLY":
             return self.a * self.b
-        elif self.type == "Divide":
+        elif self.type == "DIVIDE":
             if self.b == 0:
                 raise ValueError("Division by zero is not allowed")
             return self.a / self.b

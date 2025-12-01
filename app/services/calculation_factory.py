@@ -43,10 +43,10 @@ class CalculationFactory:
     """Factory class for creating calculation operations"""
 
     _operations = {
-        "Add": AddOperation(),
-        "Sub": SubOperation(),
-        "Multiply": MultiplyOperation(),
-        "Divide": DivideOperation(),
+        "ADD": AddOperation(),
+        "SUB": SubOperation(),
+        "MULTIPLY": MultiplyOperation(),
+        "DIVIDE": DivideOperation(),
     }
 
     @classmethod

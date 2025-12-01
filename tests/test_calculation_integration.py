@@ -13,7 +13,7 @@ class TestCalculationIntegration:
     def test_create_calculation_in_db(self, db_session: Session):
         """Test creating and storing calculation in database"""
         # Create calculation using schema
-        calc_data = CalculationCreate(a=10.0, b=5.0, type="Add")
+        calc_data = CalculationCreate(a=10.0, b=5.0, type="ADD")
         result = CalculationFactory.calculate(calc_data.a, calc_data.b, calc_data.type)
 
         # Create database record
@@ -28,7 +28,7 @@ class TestCalculationIntegration:
         assert db_calc.id is not None
         assert db_calc.a == 10.0
         assert db_calc.b == 5.0
-        assert db_calc.type == "Add"
+        assert db_calc.type == "ADD"
         assert db_calc.result == 15.0
         assert db_calc.created_at is not None
 
@@ -46,7 +46,7 @@ class TestCalculationIntegration:
 
         # Create calculation linked to user
         calc = Calculation(
-            a=20.0, b=4.0, type="Divide", result=5.0, user_id=test_user.id
+            a=20.0, b=4.0, type="DIVIDE", result=5.0, user_id=test_user.id
         )
         db_session.add(calc)
         db_session.commit()
@@ -60,7 +60,7 @@ class TestCalculationIntegration:
 
     def test_calculation_model_calculate_result_method(self, db_session: Session):
         """Test the calculate_result method in Calculation model"""
-        calc = Calculation(a=8.0, b=2.0, type="Multiply")
+        calc = Calculation(a=8.0, b=2.0, type="MULTIPLY")
         result = calc.calculate_result()
         assert result == 16.0
 
@@ -70,7 +70,7 @@ class TestCalculationIntegration:
 
     def test_calculation_model_division_by_zero(self, db_session: Session):
         """Test division by zero handling in model"""
-        calc = Calculation(a=5.0, b=0.0, type="Divide")
+        calc = Calculation(a=5.0, b=0.0, type="DIVIDE")
         with pytest.raises(ValueError, match="Division by zero is not allowed"):
             calc.calculate_result()
 
@@ -92,9 +92,9 @@ class TestCalculationIntegration:
 
         # Create multiple calculations
         calculations_data = [
-            {"a": 5, "b": 3, "type": "Add"},
-            {"a": 10, "b": 2, "type": "Divide"},
-            {"a": 4, "b": 6, "type": "Multiply"},
+            {"a": 5, "b": 3, "type": "ADD"},
+            {"a": 10, "b": 2, "type": "DIVIDE"},
+            {"a": 4, "b": 6, "type": "MULTIPLY"},
         ]
 
         for calc_data in calculations_data:
@@ -124,7 +124,7 @@ class TestCalculationIntegration:
 
     def test_calculation_without_user(self, db_session: Session):
         """Test calculation without user relationship (anonymous calculation)"""
-        calc = Calculation(a=7.0, b=3.0, type="Sub", result=4.0)
+        calc = Calculation(a=7.0, b=3.0, type="SUB", result=4.0)
         db_session.add(calc)
         db_session.commit()
         db_session.refresh(calc)
@@ -135,7 +135,7 @@ class TestCalculationIntegration:
 
     def test_calculation_timestamps(self, db_session: Session):
         """Test that timestamps are properly set"""
-        calc = Calculation(a=1.0, b=1.0, type="Add", result=2.0)
+        calc = Calculation(a=1.0, b=1.0, type="ADD", result=2.0)
         db_session.add(calc)
         db_session.commit()
         db_session.refresh(calc)
@@ -157,10 +157,10 @@ class TestCalculationIntegration:
         """Test various database query operations on calculations"""
         # Create test data
         calculations = [
-            Calculation(a=5.0, b=2.0, type="Add", result=7.0),
-            Calculation(a=10.0, b=3.0, type="Multiply", result=30.0),
-            Calculation(a=15.0, b=5.0, type="Divide", result=3.0),
-            Calculation(a=20.0, b=8.0, type="Sub", result=12.0),
+            Calculation(a=5.0, b=2.0, type="ADD", result=7.0),
+            Calculation(a=10.0, b=3.0, type="MULTIPLY", result=30.0),
+            Calculation(a=15.0, b=5.0, type="DIVIDE", result=3.0),
+            Calculation(a=20.0, b=8.0, type="SUB", result=12.0),
         ]
 
         for calc in calculations:
@@ -169,7 +169,7 @@ class TestCalculationIntegration:
 
         # Test query by type
         add_calcs = (
-            db_session.query(Calculation).filter(Calculation.type == "Add").all()
+            db_session.query(Calculation).filter(Calculation.type == "ADD").all()
         )
         assert len(add_calcs) == 1
         assert add_calcs[0].result == 7.0
@@ -186,8 +186,8 @@ class TestCalculationIntegration:
 
     def test_calculation_repr_method(self, db_session: Session):
         """Test the string representation of Calculation model"""
-        calc = Calculation(a=5.0, b=3.0, type="Add", result=8.0)
-        expected_repr = "<Calculation(id=None, a=5.0, b=3.0, type='Add', result=8.0)>"
+        calc = Calculation(a=5.0, b=3.0, type="ADD", result=8.0)
+        expected_repr = "<Calculation(id=None, a=5.0, b=3.0, type='ADD', result=8.0)>"
         assert repr(calc) == expected_repr
 
         db_session.add(calc)
@@ -196,6 +196,6 @@ class TestCalculationIntegration:
 
         # After saving, id should be present
         expected_repr_with_id = (
-            f"<Calculation(id={calc.id}, a=5.0, b=3.0, type='Add', result=8.0)>"
+            f"<Calculation(id={calc.id}, a=5.0, b=3.0, type='ADD', result=8.0)>"
         )
         assert repr(calc) == expected_repr_with_id
