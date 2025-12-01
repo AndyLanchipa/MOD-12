@@ -361,7 +361,9 @@ class TestCalculationEdit:
         # User 2 tries to update it
         update_data = {"a": 20.0}
         response = client.patch(
-            f"/api/calculations/{calc_id}", json=update_data, headers=second_user_headers
+            f"/api/calculations/{calc_id}",
+            json=update_data,
+            headers=second_user_headers
         )
 
         assert response.status_code == 404
@@ -501,7 +503,9 @@ class TestCalculationEndToEnd:
         assert delete_response.status_code == 204
 
         # 6. Verify deletion
-        verify_response = client.get(f"/api/calculations/{calc_id}", headers=auth_headers)
+        verify_response = client.get(
+            f"/api/calculations/{calc_id}", headers=auth_headers
+        )
         assert verify_response.status_code == 404
 
     def test_multiple_calculations_workflow(self, client, auth_headers):

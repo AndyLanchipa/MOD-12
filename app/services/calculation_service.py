@@ -72,17 +72,24 @@ def get_calculation_by_id(
         user_id (int): ID of the user
 
     Returns:
-        Optional[Calculation]: Calculation object if found and owned by user, None otherwise
+        Optional[Calculation]: Calculation object if found and owned by user,
+            None otherwise
     """
     return (
         db.query(Calculation)
-        .filter(Calculation.id == calculation_id, Calculation.user_id == user_id)
+        .filter(
+            Calculation.id == calculation_id,
+            Calculation.user_id == user_id
+        )
         .first()
     )
 
 
 def update_calculation(
-    db: Session, calculation_id: int, user_id: int, calculation_update: CalculationUpdate
+    db: Session,
+    calculation_id: int,
+    user_id: int,
+    calculation_update: CalculationUpdate
 ) -> Optional[Calculation]:
     """
     Update a calculation.
@@ -94,7 +101,8 @@ def update_calculation(
         calculation_update (CalculationUpdate): Updated calculation data
 
     Returns:
-        Optional[Calculation]: Updated calculation object if found and owned by user, None otherwise
+        Optional[Calculation]: Updated calculation object if found and owned
+            by user, None otherwise
     """
     db_calculation = get_calculation_by_id(db, calculation_id, user_id)
     if not db_calculation:

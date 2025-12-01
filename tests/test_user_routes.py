@@ -218,7 +218,10 @@ class TestUserEndToEnd:
         assert register_response.status_code == 201
 
         # 2. Login with the new user
-        login_data = {"username": user_data["username"], "password": user_data["password"]}
+        login_data = {
+            "username": user_data["username"],
+            "password": user_data["password"]
+        }
         login_response = client.post("/api/users/login", data=login_data)
         assert login_response.status_code == 200
         token = login_response.json()["access_token"]
