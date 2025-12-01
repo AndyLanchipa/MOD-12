@@ -128,7 +128,7 @@ def update_calculation(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(e),
         )
-    
+
     if not updated_calculation:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
