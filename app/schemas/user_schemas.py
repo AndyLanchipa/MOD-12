@@ -2,34 +2,32 @@ import re
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 class UserCreate(BaseModel):
-    username: str
+    username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=8, max_length=72)
 
     @field_validator("username")
     @classmethod
     def validate_username(cls, v):
-        if len(v) < 3:
-            raise ValueError("Username must be at least 3 characters long")
-        if len(v) > 50:
-            raise ValueError("Username must be less than 50 characters long")
-        if not re.match(r"^[a-zA-Z0-9_]+$", v):
+        if not re.match(r"^[a-zA-Z0-9_-]+$", v):
             raise ValueError(
-                "Username can only contain letters, numbers, and underscores"
+                "Username can only contain letters, numbers, underscores, and hyphens"
             )
         return v
 
     @field_validator("password")
     @classmethod
     def validate_password(cls, v):
-        if len(v) < 8:
-            raise ValueError("Password must be at least 8 characters long")
-        if len(v) > 72:  # bcrypt limitation
-            raise ValueError("Password must be less than 72 characters long")
+        # Check byte length for bcrypt compatibility (bcrypt has 72-byte limit)
+        if len(v.encode('utf-8')) > 72:
+            raise ValueError(
+                "Password cannot be longer than 72 bytes when encoded (bcrypt limitation). "
+                "Use fewer characters or avoid special Unicode characters."
+            )
         if not re.search(r"[A-Z]", v):
             raise ValueError("Password must contain at least one uppercase letter")
         if not re.search(r"[a-z]", v):

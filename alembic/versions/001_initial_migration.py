@@ -28,11 +28,11 @@ def upgrade():
         sa.Column("is_active", sa.Boolean(), default=True),
         sa.Column(
             "created_at",
-            sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
+            sa.DateTime(),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
             nullable=True,
         ),
-        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_users_id"), "users", ["id"], unique=False)
@@ -50,11 +50,11 @@ def upgrade():
         sa.Column("user_id", sa.Integer(), nullable=True),
         sa.Column(
             "created_at",
-            sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
+            sa.DateTime(),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
             nullable=True,
         ),
-        sa.Column("updated_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("updated_at", sa.DateTime(), nullable=True),
         sa.ForeignKeyConstraint(
             ["user_id"],
             ["users.id"],

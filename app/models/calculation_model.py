@@ -1,6 +1,7 @@
+from datetime import datetime
+
 from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
 
 from app.database import Base
 
@@ -14,8 +15,8 @@ class Calculation(Base):
     type = Column(String(20), nullable=False)  # ADD, SUB, MULTIPLY, DIVIDE
     result = Column(Float, nullable=True)  # Store result or compute on demand
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationship to User model
     user = relationship("User", back_populates="calculations")
