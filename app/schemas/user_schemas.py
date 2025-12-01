@@ -32,7 +32,7 @@ class UserCreate(BaseModel):
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters long")
         # Check byte length for bcrypt compatibility (bcrypt has 72-byte limit)
-        if len(v.encode('utf-8')) > 72:
+        if len(v.encode("utf-8")) > 72:
             raise ValueError(
                 "Password cannot exceed 72 UTF-8 bytes (bcrypt limit). "
                 "Use fewer characters or avoid special Unicode characters."
