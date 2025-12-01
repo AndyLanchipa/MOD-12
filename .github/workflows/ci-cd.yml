@@ -1,0 +1,134 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_USER: testuser  
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest-xvfb  # For any GUI testing if needed
+    
+    - name: Wait for PostgreSQL
+      run: |
+        until pg_isready -h localhost -p 5432 -U testuser; do
+          echo "Waiting for PostgreSQL..."
+          sleep 2
+        done
+    
+    - name: Run linting
+      run: |
+        pip install flake8 black isort
+        flake8 app/ tests/ --max-line-length=88 --ignore=E203,W503
+        black --check app/ tests/
+        isort --check-only app/ tests/
+    
+    - name: Run unit tests
+      run: |
+        pytest tests/test_calculation_factory.py -v
+        pytest tests/test_calculation_schemas.py -v
+        pytest tests/test_auth_service.py -v
+        pytest tests/test_user_schemas.py -v
+        pytest tests/test_user_service.py -v
+    
+    - name: Run integration tests
+      env:
+        DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+        TEST_DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+        SECRET_KEY: test-secret-key-for-ci
+      run: |
+        pytest tests/test_calculation_integration.py -v
+        pytest tests/test_user_routes.py -v
+        pytest tests/test_calculation_routes.py -v
+    
+    - name: Run all tests with coverage
+      env:
+        DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+        TEST_DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+        SECRET_KEY: test-secret-key-for-ci
+      run: |
+        pytest tests/ -v --cov=app --cov-report=xml --cov-report=html --cov-fail-under=80
+    
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+    
+    - name: Build Docker image
+      run: |
+        docker build -t mod-12-calculation-api:${{ github.sha }} .
+        docker tag mod-12-calculation-api:${{ github.sha }} mod-12-calculation-api:latest
+    
+    - name: Run security scan
+      run: |
+        pip install bandit safety
+        bandit -r app/ -f json -o bandit-report.json || true
+        safety check --json --output safety-report.json || true
+    
+    - name: Login to Docker Hub
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+    
+    - name: Push to Docker Hub
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      run: |
+        docker tag mod-12-calculation-api:latest ${{ secrets.DOCKER_USERNAME }}/mod-12-calculation-api:latest
+        docker tag mod-12-calculation-api:latest ${{ secrets.DOCKER_USERNAME }}/mod-12-calculation-api:${{ github.sha }}
+        docker push ${{ secrets.DOCKER_USERNAME }}/mod-12-calculation-api:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/mod-12-calculation-api:${{ github.sha }}
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deployment notification
+      run: |
+        echo "Deployment would happen here"
+        echo "Docker image has been pushed to Docker Hub"
+        echo "Image tag: ${{ secrets.DOCKER_USERNAME }}/mod-12-calculation-api:${{ github.sha }}"
