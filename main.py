@@ -5,7 +5,7 @@ from app.routers import calculation_routes, user_routes
 
 app = FastAPI(
     title="Calculation API",
-    description="A FastAPI application for mathematical calculations with user management",
+    description="FastAPI app for calculations and user management",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",

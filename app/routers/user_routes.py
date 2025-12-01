@@ -60,6 +60,13 @@ def login_user(
     Raises:
         HTTPException: If credentials are invalid
     """
+    # Validate presence of credentials to return 422 for empty inputs
+    if not form_data.username or not form_data.password:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Username and password are required",
+        )
+
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
